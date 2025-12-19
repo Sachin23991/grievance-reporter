@@ -2,9 +2,9 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { AlertCircle, CheckCircle, Clock, ArrowRight, TrendingUp, Users, Building, Shield, Zap, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Hero3D from '../components/Hero3D';
+import heroIllustration from '../assets/hero_illustration.png';
 
-// --- Utility Components for Animations ---
+// --- Utility Components ---
 
 const FadeInUp = ({ children, delay = 0, className = "" }) => (
     <motion.div
@@ -90,45 +90,41 @@ const LandingPage = () => {
 
     return (
         <div className="bg-[#f8f9fa] text-gray-900 overflow-hidden font-sans selection:bg-green-200">
-            {/* Scroll Progress Bar */}
+            {/* Scroll Progress */}
             <motion.div
                 className="fixed top-0 left-0 right-0 h-1.5 bg-[#c5a059] origin-left z-50"
                 style={{ scaleX }}
             />
 
             {/* --- HERO SECTION --- */}
-            <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-                <div className="absolute inset-0 z-0 bg-radial-gradient from-green-50 to-white opacity-80" />
+            <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-20 bg-gradient-to-br from-green-50/50 via-white to-white">
 
-                {/* Decorative Blobs */}
-                <motion.div
-                    animate={{ x: [0, 100, 0], y: [0, -50, 0] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-green-200/30 rounded-full blur-3xl opacity-50"
-                />
-                <motion.div
-                    animate={{ x: [0, -80, 0], y: [0, 50, 0] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                    className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#c5a059]/10 rounded-full blur-3xl opacity-50"
-                />
+                {/* Background Decor - Subtle */}
+                <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-green-100/30 rounded-full blur-3xl -z-10" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#c5a059]/10 rounded-full blur-3xl -z-10" />
 
-                <div className="container mx-auto px-6 md:px-12 relative z-10 grid grid-cols-1 md:grid-cols-2 items-center gap-12">
-                    <div className="space-y-8">
+
+                <div className="container mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+                    {/* Left Content */}
+                    <div className="space-y-8 z-10">
                         <FadeInUp delay={0.2}>
-                            <div className="flex items-center gap-2 mb-4">
-                                <span className="h-px w-12 bg-[#c5a059]" />
-                                <span className="text-[#c5a059] font-bold tracking-[0.2em] text-sm uppercase">Official Grievance Portal</span>
+                            <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full border border-green-100 shadow-sm">
+                                <span className="h-2 w-2 rounded-full bg-[#1a472a] animate-pulse" />
+                                <span className="text-[#1a472a] font-bold tracking-widest text-xs uppercase">Official Grievance Portal</span>
                             </div>
                         </FadeInUp>
 
-                        <div className="text-6xl md:text-8xl font-serif font-bold leading-[0.9] tracking-tight">
-                            <SplitText delay={0.2} className="block text-gray-900">Voice of</SplitText>
-                            <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#1a472a] to-[#2e7d32]">
-                                <SplitText delay={0.5}>Justice.</SplitText>
-                                <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#c5a059] opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
-                                    <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
-                                </svg>
-                            </span>
+                        <div className="z-20">
+                            <h1 className="text-5xl md:text-7xl font-serif font-bold leading-[1.05] tracking-tight text-gray-900">
+                                <SplitText delay={0.2}>Voice of</SplitText> <br />
+                                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#1a472a] to-[#2e7d32]">
+                                    <SplitText delay={0.5}>Justice.</SplitText>
+                                    <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#c5a059] opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                        <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
+                                    </svg>
+                                </span>
+                            </h1>
                         </div>
 
                         <FadeInUp delay={0.8}>
@@ -143,7 +139,7 @@ const LandingPage = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="bg-[#1a472a] text-white px-8 py-4 rounded-full font-medium text-lg shadow-lg shadow-green-900/20 flex items-center gap-2 group hover:ring-2 hover:ring-offset-2 hover:ring-[#1a472a] transition-all"
+                                    className="bg-[#1a472a] text-white px-8 py-4 rounded-full font-medium text-lg shadow-xl shadow-green-900/20 flex items-center gap-2 group transition-all"
                                 >
                                     File a Complaint
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -153,67 +149,73 @@ const LandingPage = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="px-8 py-4 rounded-full font-medium text-lg border border-gray-300 hover:border-[#1a472a] hover:text-[#1a472a] transition-colors bg-white/50 backdrop-blur-sm"
+                                    className="px-8 py-4 rounded-full font-medium text-lg border border-gray-300 hover:border-[#1a472a] hover:text-[#1a472a] transition-colors bg-white/70 backdrop-blur-sm shadow-sm"
                                 >
                                     How it works
                                 </motion.button>
                             </Link>
                         </FadeInUp>
 
+                        {/* Mini Stats */}
+                        <FadeInUp delay={1.2} className="pt-8 border-t border-gray-200/60 flex items-center gap-12">
+                            <div>
+                                <h4 className="text-3xl font-bold text-[#1a472a]">12k+</h4>
+                                <p className="text-sm text-gray-500 uppercase tracking-wider font-semibold">Resolved</p>
+                            </div>
+                            <div>
+                                <h4 className="text-3xl font-bold text-[#1a472a]">98%</h4>
+                                <p className="text-sm text-gray-500 uppercase tracking-wider font-semibold">Satisfaction</p>
+                            </div>
+                        </FadeInUp>
                     </div>
 
-                    <div className="relative h-[600px] w-full hidden md:block">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.8, rotate: -20 }}
-                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                            transition={{ duration: 1.2, delay: 0.2, type: "spring" }}
-                            className="absolute inset-0 z-10"
-                        >
-                            <Hero3D />
-                        </motion.div>
-                        {/* Abstract backdrop for 3D elements */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-green-100/50 to-transparent rounded-full blur-3xl -z-10" />
-                    </div>
+                    {/* Right Image */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                        className="relative z-10 flex justify-center md:justify-end"
+                    >
+                        <div className="relative w-full max-w-lg">
+                            {/* Accent Ring */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] border border-[#c5a059]/30 rounded-full animate-spin-slow pointer-events-none" style={{ animationDuration: '20s' }}></div>
+
+                            <img
+                                src={heroIllustration}
+                                alt="Civic Grievance Illustration"
+                                className="w-full h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                            />
+                        </div>
+                    </motion.div>
                 </div>
             </section>
 
             {/* --- MARQUEE SEPARATOR --- */}
-            <div className="relative py-12 bg-[#1a472a] text-[#c5a059] flex items-center overflow-hidden rotate-1 mt-10 -mx-4 shadow-2xl">
+            <div className="relative py-12 bg-[#1a472a] text-[#c5a059] flex items-center overflow-hidden -rotate-1 shadow-2xl z-20">
                 <ParallaxText baseVelocity={-5}>TRANSPARENCY • ACCOUNTABILITY • SPEED • JUSTICE • </ParallaxText>
             </div>
 
             {/* --- FEATURES SECTION --- */}
-            <section className="py-32 relative">
+            <section className="py-32 relative z-10">
                 <div className="container mx-auto px-6 md:px-12">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-20">
-                        <div className="max-w-2xl">
-                            <motion.span
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                className="text-[#c5a059] font-bold tracking-widest uppercase mb-4 block"
-                            >
-                                Why Choose Us
-                            </motion.span>
-                            <motion.h2
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.2 }}
-                                className="text-4xl md:text-6xl font-serif font-bold text-[#1a472a]"
-                            >
-                                Redefining Public Service.
-                            </motion.h2>
-                        </div>
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
+                    <div className="text-center mb-20">
+                        <motion.span
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: 0.4 }}
-                            className="text-gray-500 max-w-md mt-6 md:mt-0 text-lg"
+                            className="text-[#c5a059] font-bold tracking-widest uppercase mb-4 block"
                         >
-                            Advanced tools and dedicated officers working in sync to ensure your community thrives.
-                        </motion.p>
+                            Why Choose Us
+                        </motion.span>
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                            className="text-4xl md:text-6xl font-serif font-bold text-[#1a472a]"
+                        >
+                            Redefining Public Service.
+                        </motion.h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -251,7 +253,7 @@ const LandingPage = () => {
                         <p className="text-green-200 text-xl max-w-2xl mx-auto">We cover every aspect of civic life. Select your concern area.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {[
                             { name: "Sanitation", icon: Users },
                             { name: "Roadworks", icon: Building },
@@ -269,10 +271,10 @@ const LandingPage = () => {
                                 whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.05 }}
-                                className="bg-white/5 border border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer backdrop-blur-sm"
+                                className="bg-white/5 border border-white/10 p-8 rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer backdrop-blur-sm"
                             >
                                 <cat.icon className="w-8 h-8 text-[#c5a059]" />
-                                <span className="font-semibold tracking-wide">{cat.name}</span>
+                                <span className="font-semibold tracking-wide text-lg">{cat.name}</span>
                             </motion.div>
                         ))}
                     </div>
