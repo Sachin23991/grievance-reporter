@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Link, useNavigate, NavLink } from 'react-router-dom';
+import { Link, useNavigate, NavLink, useLocation } from 'react-router-dom';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { ShieldCheck, LogOut, Menu, User } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
@@ -7,8 +7,15 @@ import { AuthContext } from '../context/AuthContext';
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
+    const location = useLocation();
     const [isScrolled, setIsScrolled] = useState(false);
     const { scrollY } = useScroll();
+
+    const isLandingPage = location.pathname === '/';
+    // Login/Register pages also look better with fixed/transparent nav usually, but let's stick to Dashboard request.
+    // Actually, usually only Landing pages need the transparent overlay effect. 
+    // Let's treat Landing as special. Ideally Login/Register too if they have full BG images.
+    // Based on user request "dashboard should start from navbar", we definitely want sticky for dashboard.
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         setIsScrolled(latest > 20);
@@ -29,14 +36,16 @@ const Navbar = () => {
         />
     );
 
+    // Dynamic classes based on route
+    const navbarClasses = isLandingPage || location.pathname === '/login' || location.pathname === '/register'
+        ? `fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md py-3 px-8' : 'bg-transparent py-5 px-8'}`
+        : 'sticky top-0 z-50 bg-white shadow-sm py-3 px-8'; // Dashboard & others get solid sticky nav
+
     return (
         <motion.nav
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                    ? 'bg-white/90 backdrop-blur-md shadow-md py-3 px-8'
-                    : 'bg-transparent py-5 px-8'
-                }`}
+            className={navbarClasses}
         >
             <div className="max-w-7xl mx-auto flex justify-between items-center">
                 <Link to="/" className="flex items-center gap-3 group">
