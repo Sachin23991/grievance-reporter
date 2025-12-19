@@ -53,7 +53,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Final validation
         const emailErr = validateField('email', formData.email);
         const passErr = validateField('password', formData.password);
@@ -83,7 +83,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex bg-gray-50 relative overflow-hidden pt-20">
+        <div className="min-h-screen flex bg-gray-50 relative overflow-hidden pt-32">
             {/* Left Side - Modern Illustration & Branding */}
             <div className="hidden lg:flex lg:w-1/2 relative bg-[#1a472a] items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -138,8 +138,8 @@ const Login = () => {
                             {isResetting ? 'Reset Password' : 'Welcome Back'}
                         </h2>
                         <p className="text-gray-500">
-                            {isResetting 
-                                ? 'Enter your email to receive reset instructions.' 
+                            {isResetting
+                                ? 'Enter your email to receive reset instructions.'
                                 : 'Please enter your details to sign in.'}
                         </p>
                     </div>
@@ -161,8 +161,8 @@ const Login = () => {
                                         </div>
                                         <h3 className="font-bold text-lg mb-2">Check your email</h3>
                                         <p className="text-sm opacity-80 mb-6">We've sent password reset instructions to {resetEmail}.</p>
-                                        <button 
-                                            type="button" 
+                                        <button
+                                            type="button"
                                             onClick={() => setIsResetting(false)}
                                             className="text-green-800 hover:text-green-900 font-semibold underline"
                                         >
@@ -283,8 +283,8 @@ const Login = () => {
                                             </div>
                                         </div>
                                     </label>
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={() => setIsResetting(true)}
                                         className="font-medium text-[#1a472a] hover:underline"
                                     >

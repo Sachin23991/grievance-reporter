@@ -115,7 +115,7 @@ const LandingPage = () => {
     const actionLink = user ? "/dashboard" : "/register";
 
     return (
-        <div className="text-gray-900 overflow-hidden font-sans selection:bg-green-200 relative pt-16 md:pt-0">
+        <div className="text-gray-900 overflow-hidden font-sans selection:bg-green-200 relative pt-32">
             {/* Scroll Progress */}
             <motion.div
                 className="fixed top-0 left-0 right-0 h-1.5 bg-[#c5a059] origin-left z-50"
