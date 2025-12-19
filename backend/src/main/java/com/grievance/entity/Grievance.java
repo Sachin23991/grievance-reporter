@@ -21,6 +21,8 @@ public class Grievance {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String rejectionReason;
+
     public Grievance() {
     }
 
@@ -88,5 +90,13 @@ public class Grievance {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 }

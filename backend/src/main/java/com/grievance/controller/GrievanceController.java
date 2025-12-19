@@ -53,7 +53,9 @@ public class GrievanceController {
                 grievance.setDescription(grievanceDetails.getDescription());
             if (grievanceDetails.getStatus() != null)
                 grievance.setStatus(grievanceDetails.getStatus());
-            // Add other fields as necessary
+            if (grievanceDetails.getRejectionReason() != null)
+                grievance.setRejectionReason(grievanceDetails.getRejectionReason());
+
             return grievanceRepository.save(grievance);
         }).orElseThrow(() -> new RuntimeException("Grievance not found with id " + id));
     }

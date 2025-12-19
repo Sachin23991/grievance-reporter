@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, AnimatePresence } from 'framer-motion';
 import { AlertCircle, CheckCircle, Clock, ArrowRight, TrendingUp, Users, Building, Shield, Zap, Award, BarChart3, FileText, MousePointer2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroIllustration from '../assets/hero_illustration.png';
@@ -105,12 +105,43 @@ const GlowingButton = ({ children, primary = false, ...props }) => {
     );
 };
 
+// --- Modal Component for Features ---
+const FeatureModal = ({ feature, onClose }) => {
+    if (!feature) return null;
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative"
+            >
+                <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 bg-gray-100 p-2 rounded-full transition-colors"><X size={20} /></button>
+                <div className={`w-16 h-16 rounded-2xl ${feature.bg} flex items-center justify-center mb-6`}>
+                    {feature.icon}
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed text-lg mb-6">
+                    This feature allows citizens to experience transparency like never before. {feature.desc}
+                    <br /><br />
+                    <strong>Why it matters:</strong> By choosing our platform, you ensure that every action is recorded, every delay is accounted for, and every resolution is verified.
+                </p>
+                <button onClick={onClose} className="w-full py-3 bg-[#1a472a] text-white rounded-xl font-bold hover:bg-green-900 transition-colors">
+                    Got it
+                </button>
+            </motion.div>
+        </div>
+    );
+};
+
 // --- Main Page Component ---
 
 const LandingPage = () => {
     const { scrollYProgress } = useScroll();
     const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
     const { user } = useContext(AuthContext);
+    const [selectedFeature, setSelectedFeature] = useState(null);
 
     const actionLink = user ? "/dashboard" : "/register";
 
@@ -124,6 +155,11 @@ const LandingPage = () => {
 
             {/* Immersive 3D Background - Fixed behind everything */}
             <ImmersiveBackground />
+
+            {/* Feature Modal */}
+            <AnimatePresence>
+                {selectedFeature && <FeatureModal feature={selectedFeature} onClose={() => setSelectedFeature(null)} />}
+            </AnimatePresence>
 
             {/* --- HERO SECTION --- */}
             <section className="relative min-h-[90vh] flex items-center overflow-hidden">
@@ -262,22 +298,24 @@ const LandingPage = () => {
                             { title: "Direct Action", icon: <Zap className="w-8 h-8" />, desc: "Complaints are routed directly to the responsible field officer.", bg: "bg-yellow-50 text-yellow-700" },
                             { title: "Public Analytics", icon: <BarChart3 className="w-8 h-8" />, desc: "View heatmaps and statistics of grievances in your area.", bg: "bg-purple-50 text-purple-700" }
                         ].map((item, index) => (
-                            <SpotlightCard key={index} className="rounded-3xl h-full shadow-lg border-gray-100">
-                                <motion.div
-                                    className="p-10 h-full flex flex-col items-start gap-6 relative z-10 group"
-                                    whileHover={{ y: -5 }}
-                                >
-                                    <div className={`p-4 rounded-2xl ${item.bg} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
-                                        {item.icon}
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-[#1a472a] transition-colors">{item.title}</h3>
-                                    <p className="text-gray-500 leading-relaxed text-lg">{item.desc}</p>
+                            <div key={index} onClick={() => setSelectedFeature(item)} className="cursor-pointer">
+                                <SpotlightCard className="rounded-3xl h-full shadow-lg border-gray-100">
+                                    <motion.div
+                                        className="p-10 h-full flex flex-col items-start gap-6 relative z-10 group"
+                                        whileHover={{ y: -5 }}
+                                    >
+                                        <div className={`p-4 rounded-2xl ${item.bg} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+                                            {item.icon}
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-gray-900 group-hover:text-[#1a472a] transition-colors">{item.title}</h3>
+                                        <p className="text-gray-500 leading-relaxed text-lg">{item.desc}</p>
 
-                                    <div className="mt-auto pt-4 flex items-center gap-2 text-[#1a472a] font-semibold opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0">
-                                        Learn more <ArrowRight size={16} />
-                                    </div>
-                                </motion.div>
-                            </SpotlightCard>
+                                        <div className="mt-auto pt-4 flex items-center gap-2 text-[#1a472a] font-semibold opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0">
+                                            Learn more <ArrowRight size={16} />
+                                        </div>
+                                    </motion.div>
+                                </SpotlightCard>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -290,39 +328,40 @@ const LandingPage = () => {
                 <div className="container mx-auto px-6 md:px-12 relative z-10">
                     <div className="text-center mb-20">
                         <h2 className="text-5xl font-serif font-bold mb-6">Departments</h2>
-                        <p className="text-green-200 text-xl max-w-2xl mx-auto">We cover every aspect of civic life. Select your concern area.</p>
+                        <p className="text-green-200 text-xl max-w-2xl mx-auto">We cover every aspect of civic life. Select your concern area to know more.</p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                         {[
-                            { name: "Sanitation", icon: Users, stats: "1.2k complaints" },
-                            { name: "Roadworks", icon: Building, stats: "850+ in progress" },
-                            { name: "Lighting", icon: Zap, stats: "98% resolved" },
-                            { name: "Water Supply", icon: CheckCircle, stats: "24h avg time" },
-                            { name: "Transport", icon: Clock, stats: "450 active" },
-                            { name: "Health", icon: AlertCircle, stats: "Priority High" },
-                            { name: "Law & Order", icon: Shield, stats: "Direct Line" },
-                            { name: "Education", icon: Award, stats: "New Dept" }
+                            { id: "sanitation", name: "Sanitation", icon: Users, stats: "1.2k complaints" },
+                            { id: "roadworks", name: "Roadworks", icon: Building, stats: "850+ in progress" },
+                            { id: "lighting", name: "Lighting", icon: Zap, stats: "98% resolved" },
+                            { id: "water-supply", name: "Water Supply", icon: CheckCircle, stats: "24h avg time" },
+                            { id: "transport", name: "Transport", icon: Clock, stats: "450 active" },
+                            { id: "health", name: "Health", icon: AlertCircle, stats: "Priority High" },
+                            { id: "law-order", name: "Law & Order", icon: Shield, stats: "Direct Line" },
+                            { id: "education", name: "Education", icon: Award, stats: "New Dept" }
                         ].map((cat, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                whileHover={{ scale: 1.05, y: -5, backgroundColor: "rgba(255,255,255,0.15)" }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.05 }}
-                                className="group bg-white/5 border border-white/10 p-8 rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:shadow-green-900/50"
-                            >
-                                <div className="p-3 bg-white/10 rounded-full group-hover:bg-[#c5a059] transition-colors duration-300">
-                                    <cat.icon className="w-8 h-8 text-[#c5a059] group-hover:text-[#1a472a] transition-colors" />
-                                </div>
-                                <div className="text-center">
-                                    <span className="font-semibold tracking-wide text-lg block">{cat.name}</span>
-                                    <span className="text-xs text-green-300 uppercase tracking-wider font-medium opacity-0 group-hover:opacity-100 transition-opacity mt-1 block">
-                                        {cat.stats}
-                                    </span>
-                                </div>
-                            </motion.div>
+                            <Link to={`/department/${cat.id}`} key={i}>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    whileHover={{ scale: 1.05, y: -5, backgroundColor: "rgba(255,255,255,0.15)" }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.05 }}
+                                    className="group bg-white/5 border border-white/10 p-8 rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:shadow-green-900/50 h-full"
+                                >
+                                    <div className="p-3 bg-white/10 rounded-full group-hover:bg-[#c5a059] transition-colors duration-300">
+                                        <cat.icon className="w-8 h-8 text-[#c5a059] group-hover:text-[#1a472a] transition-colors" />
+                                    </div>
+                                    <div className="text-center">
+                                        <span className="font-semibold tracking-wide text-lg block">{cat.name}</span>
+                                        <span className="text-xs text-green-300 uppercase tracking-wider font-medium opacity-0 group-hover:opacity-100 transition-opacity mt-1 block">
+                                            {cat.stats}
+                                        </span>
+                                    </div>
+                                </motion.div>
+                            </Link>
                         ))}
                     </div>
                 </div>

@@ -68,15 +68,24 @@ const GrievanceForm = () => {
             const cat = CATEGORIES.find(c => c.label === existingComplaint.category) || CATEGORIES[0];
             setFormData({
                 category: cat,
-                subject: existingComplaint.title || existingComplaint.category, // Backend might use title or category as main field
+                subject: existingComplaint.title || existingComplaint.category, 
                 description: existingComplaint.description || '',
-                location: existingComplaint.location || 'Location from previous record', // Backend might need location field
+                location: existingComplaint.location || 'Location from previous record', 
                 attachments: []
             });
             setStep(3); // Jump to details for editing
             setGuidelinesConfirmed(true);
+        } else if (location.state?.preSelectedCategory) {
+            // Handle pre-selection from Department Page
+            const preCatName = location.state.preSelectedCategory;
+            // Fuzzy match logic since names might slightly differ ("Sanitation & Waste" vs "Sanitation")
+            const cat = CATEGORIES.find(c => c.label.includes(preCatName) || preCatName.includes(c.label) || c.id.toLowerCase() === preCatName.toLowerCase()) || CATEGORIES[0];
+            setFormData(prev => ({ ...prev, category: cat }));
+            // We stay on Step 1 but with category selected, providing a smoother start
+            // Or we could auto-advance:
+            // setStep(2); 
         }
-    }, [isEditMode, existingComplaint]);
+    }, [isEditMode, existingComplaint, location.state]);
 
     // Draft Saving Simulation
     useEffect(() => {

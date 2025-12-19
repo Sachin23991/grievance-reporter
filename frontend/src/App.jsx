@@ -11,6 +11,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import GrievanceForm from './pages/GrievanceForm';
 import HowItWorks from './pages/HowItWorks';
 
+import DepartmentDetails from './pages/DepartmentDetails';
+import Footer from './components/Footer';
 import { ToastProvider } from './context/ToastContext';
 
 function App() {
@@ -30,8 +32,10 @@ function App() {
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/raise-grievance" element={<GrievanceForm />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/department/:id" element={<DepartmentDetails />} />
               </Routes>
             </div>
+            <Footer />
           </div>
         </Router>
       </ToastProvider>

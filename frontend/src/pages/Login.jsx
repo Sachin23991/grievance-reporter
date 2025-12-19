@@ -65,6 +65,22 @@ const Login = () => {
         setIsLoading(true);
         setError('');
 
+        // Mock Admin Login (Backdoor for demo/testing)
+        if (formData.email === 'admin@civil.gov' && formData.password === 'admin123') {
+            setTimeout(() => {
+                const adminUser = {
+                    id: 999,
+                    email: 'admin@civil.gov',
+                    fullName: 'System Administrator',
+                    role: 'ADMIN'
+                };
+                login(adminUser);
+                navigate('/admin');
+                setIsLoading(false);
+            }, 1000);
+            return;
+        }
+
         try {
             const response = await axios.post('http://localhost:8080/api/auth/login', formData);
             if (response.data) {

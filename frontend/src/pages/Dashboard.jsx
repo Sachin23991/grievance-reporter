@@ -173,6 +173,12 @@ const Dashboard = () => {
                                     </div>
                                     <h4 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-green-800 transition-colors">{complaint.category || complaint.title}</h4>
                                     <p className="text-sm text-gray-500 line-clamp-1">{complaint.description}</p>
+                                    {complaint.status === 'Rejected' && complaint.rejectionReason && (
+                                        <div className="mt-2 text-xs bg-red-50 text-red-700 p-2 rounded border border-red-100 flex items-start gap-1">
+                                            <Info size={14} className="mt-0.5 shrink-0" />
+                                            <span><strong>Reason:</strong> {complaint.rejectionReason}</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="mt-4 md:mt-0 md:ml-8 flex items-center gap-4 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0 border-gray-100">
                                     {complaint.status === 'Pending' && (
