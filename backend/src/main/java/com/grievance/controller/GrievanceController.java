@@ -37,6 +37,24 @@ public class GrievanceController {
             User u = userRepository.findById(grievance.getUser().getId()).orElse(null);
             grievance.setUser(u);
         }
+        // Set default status if not provided
+        if (grievance.getStatus() == null || grievance.getStatus().isEmpty()) {
+            grievance.setStatus("Pending");
+        }
         return grievanceRepository.save(grievance);
+    }
+
+    @PutMapping("/update/{id}")
+    public Grievance updateGrievance(@PathVariable Long id, @RequestBody Grievance grievanceDetails) {
+        return grievanceRepository.findById(id).map(grievance -> {
+            if (grievanceDetails.getCategory() != null)
+                grievance.setCategory(grievanceDetails.getCategory());
+            if (grievanceDetails.getDescription() != null)
+                grievance.setDescription(grievanceDetails.getDescription());
+            if (grievanceDetails.getStatus() != null)
+                grievance.setStatus(grievanceDetails.getStatus());
+            // Add other fields as necessary
+            return grievanceRepository.save(grievance);
+        }).orElseThrow(() -> new RuntimeException("Grievance not found with id " + id));
     }
 }

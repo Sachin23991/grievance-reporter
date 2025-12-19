@@ -1,8 +1,10 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
-import { AlertCircle, CheckCircle, Clock, ArrowRight, TrendingUp, Users, Building, Shield, Zap, Award } from 'lucide-react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from 'framer-motion';
+import { AlertCircle, CheckCircle, Clock, ArrowRight, TrendingUp, Users, Building, Shield, Zap, Award, BarChart3, FileText, MousePointer2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroIllustration from '../assets/hero_illustration.png';
+import ImmersiveBackground from '../components/ImmersiveBackground';
+import { AuthContext } from '../context/AuthContext';
 
 // --- Utility Components ---
 
@@ -20,7 +22,7 @@ const FadeInUp = ({ children, delay = 0, className = "" }) => (
 
 const SplitText = ({ children, className = "", delay = 0 }) => {
     return (
-        <span className={className}>
+        <span className={`${className} inline-block whitespace-nowrap`}>
             {children.split("").map((char, i) => (
                 <motion.span
                     key={i}
@@ -53,32 +55,53 @@ const ParallaxText = ({ children, baseVelocity = 100 }) => {
     );
 };
 
-const TiltCard = ({ children, className = "" }) => {
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const mouseX = useSpring(x, { stiffness: 500, damping: 100 });
-    const mouseY = useSpring(y, { stiffness: 500, damping: 100 });
+// Spotlight Card Component
+const SpotlightCard = ({ children, className = "" }) => {
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
 
-    function onMouseMove({ currentTarget, clientX, clientY }) {
-        const { left, top, width, height } = currentTarget.getBoundingClientRect();
-        x.set(clientX - left - width / 2);
-        y.set(clientY - top - height / 2);
+    function handleMouseMove({ currentTarget, clientX, clientY }) {
+        let { left, top } = currentTarget.getBoundingClientRect();
+        mouseX.set(clientX - left);
+        mouseY.set(clientY - top);
     }
 
-    const rotateX = useTransform(mouseY, [-300, 300], [15, -15]);
-    const rotateY = useTransform(mouseX, [-300, 300], [-15, 15]);
-
     return (
-        <motion.div
-            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-            onMouseMove={onMouseMove}
-            onMouseLeave={() => { x.set(0); y.set(0); }}
-            className={`relative transition-all duration-200 ease-linear ${className}`}
+        <div
+            className={`group relative border border-gray-200 bg-white overflow-hidden ${className}`}
+            onMouseMove={handleMouseMove}
         >
-            <div style={{ transform: "translateZ(50px)" }}>
-                {children}
-            </div>
-        </motion.div>
+            <motion.div
+                className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100"
+                style={{
+                    background: useMotionTemplate`
+                        radial-gradient(
+                            650px circle at ${mouseX}px ${mouseY}px,
+                            rgba(26, 71, 42, 0.15),
+                            transparent 80%
+                        )
+                    `,
+                }}
+            />
+            <div className="relative h-full">{children}</div>
+        </div>
+    );
+};
+
+// Button with Hover Glow
+const GlowingButton = ({ children, primary = false, ...props }) => {
+    return (
+        <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`relative overflow-hidden px-8 py-4 rounded-full font-medium text-lg transition-all ${primary
+                ? 'bg-[#1a472a] text-white shadow-xl shadow-green-900/20'
+                : 'border-2 border-[#1a472a] bg-transparent text-[#1a472a] hover:bg-[#1a472a] hover:text-white'
+                }`}
+            {...props}
+        >
+            <span className="relative z-10 flex items-center gap-2">{children}</span>
+        </motion.button>
     );
 };
 
@@ -87,85 +110,96 @@ const TiltCard = ({ children, className = "" }) => {
 const LandingPage = () => {
     const { scrollYProgress } = useScroll();
     const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+    const { user } = useContext(AuthContext);
+
+    const actionLink = user ? "/dashboard" : "/register";
 
     return (
-        <div className="bg-[#f8f9fa] text-gray-900 overflow-hidden font-sans selection:bg-green-200">
+        <div className="text-gray-900 overflow-hidden font-sans selection:bg-green-200 relative pt-16 md:pt-0">
             {/* Scroll Progress */}
             <motion.div
                 className="fixed top-0 left-0 right-0 h-1.5 bg-[#c5a059] origin-left z-50"
                 style={{ scaleX }}
             />
 
+            {/* Immersive 3D Background - Fixed behind everything */}
+            <ImmersiveBackground />
+
             {/* --- HERO SECTION --- */}
-            <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-20 bg-gradient-to-br from-green-50/50 via-white to-white">
-
-                {/* Background Decor - Subtle */}
-                <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-green-100/30 rounded-full blur-3xl -z-10" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#c5a059]/10 rounded-full blur-3xl -z-10" />
-
-
+            <section className="relative min-h-[90vh] flex items-center overflow-hidden">
                 <div className="container mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
                     {/* Left Content */}
-                    <div className="space-y-8 z-10">
+                    <div className="space-y-8 z-10 order-2 md:order-1 relative">
                         <FadeInUp delay={0.2}>
-                            <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full border border-green-100 shadow-sm">
+                            <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-green-100 shadow-sm cursor-default"
+                            >
                                 <span className="h-2 w-2 rounded-full bg-[#1a472a] animate-pulse" />
                                 <span className="text-[#1a472a] font-bold tracking-widest text-xs uppercase">Official Grievance Portal</span>
-                            </div>
+                            </motion.div>
                         </FadeInUp>
 
                         <div className="z-20">
-                            <h1 className="text-5xl md:text-7xl font-serif font-bold leading-[1.05] tracking-tight text-gray-900">
+                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold leading-[1.05] tracking-tight text-gray-900">
                                 <SplitText delay={0.2}>Voice of</SplitText> <br />
                                 <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#1a472a] to-[#2e7d32]">
                                     <SplitText delay={0.5}>Justice.</SplitText>
                                     <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#c5a059] opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
-                                        <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
+                                        <motion.path
+                                            initial={{ pathLength: 0 }}
+                                            animate={{ pathLength: 1 }}
+                                            transition={{ duration: 1, delay: 1 }}
+                                            d="M0 5 Q 50 10 100 5"
+                                            stroke="currentColor"
+                                            strokeWidth="3"
+                                            fill="none"
+                                        />
                                     </svg>
                                 </span>
                             </h1>
                         </div>
 
                         <FadeInUp delay={0.8}>
-                            <p className="text-xl text-gray-600 max-w-lg leading-relaxed font-light">
+                            <p className="text-xl text-gray-600 max-w-lg leading-relaxed font-light backdrop-blur-sm">
                                 Empowering citizens with a transparent, efficient, and accountable platform.
                                 Your grievances, heard and resolved.
                             </p>
                         </FadeInUp>
 
                         <FadeInUp delay={1.0} className="flex flex-wrap gap-4">
-                            <Link to="/register">
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="bg-[#1a472a] text-white px-8 py-4 rounded-full font-medium text-lg shadow-xl shadow-green-900/20 flex items-center gap-2 group transition-all"
-                                >
+                            <Link to={actionLink}>
+                                <GlowingButton primary>
                                     File a Complaint
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </motion.button>
+                                </GlowingButton>
                             </Link>
-                            <Link to="/about">
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="px-8 py-4 rounded-full font-medium text-lg border border-gray-300 hover:border-[#1a472a] hover:text-[#1a472a] transition-colors bg-white/70 backdrop-blur-sm shadow-sm"
-                                >
+                            <Link to="/how-it-works">
+                                <GlowingButton>
                                     How it works
-                                </motion.button>
+                                </GlowingButton>
                             </Link>
                         </FadeInUp>
 
                         {/* Mini Stats */}
                         <FadeInUp delay={1.2} className="pt-8 border-t border-gray-200/60 flex items-center gap-12">
-                            <div>
-                                <h4 className="text-3xl font-bold text-[#1a472a]">12k+</h4>
-                                <p className="text-sm text-gray-500 uppercase tracking-wider font-semibold">Resolved</p>
-                            </div>
-                            <div>
-                                <h4 className="text-3xl font-bold text-[#1a472a]">98%</h4>
-                                <p className="text-sm text-gray-500 uppercase tracking-wider font-semibold">Satisfaction</p>
-                            </div>
+                            {[
+                                { val: "12k+", label: "Resolved", date: "Year 2024" },
+                                { val: "98%", label: "Satisfaction", date: "User Feedback" }
+                            ].map((stat, i) => (
+                                <motion.div
+                                    key={i}
+                                    whileHover={{ y: -5 }}
+                                    className="cursor-pointer group"
+                                >
+                                    <h4 className="text-3xl font-bold text-[#1a472a]">{stat.val}</h4>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm text-gray-800 font-semibold uppercase tracking-wider">{stat.label}</span>
+                                        <span className="text-xs text-gray-500">{stat.date}</span>
+                                    </div>
+                                </motion.div>
+                            ))}
                         </FadeInUp>
                     </div>
 
@@ -174,29 +208,33 @@ const LandingPage = () => {
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-                        className="relative z-10 flex justify-center md:justify-end"
+                        className="relative z-10 flex justify-center md:justify-end order-1 md:order-2"
                     >
-                        <div className="relative w-full max-w-lg">
+                        <motion.div
+                            whileHover={{ scale: 1.02, rotate: 1 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            className="relative w-full max-w-sm md:max-w-lg cursor-pointer"
+                        >
                             {/* Accent Ring */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] border border-[#c5a059]/30 rounded-full animate-spin-slow pointer-events-none" style={{ animationDuration: '20s' }}></div>
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] border border-[#c5a059]/30 rounded-full animate-spin-slow pointer-events-none" style={{ animationDuration: '30s' }}></div>
 
                             <img
                                 src={heroIllustration}
                                 alt="Civic Grievance Illustration"
-                                className="w-full h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                                className="w-full h-auto object-contain drop-shadow-2xl"
                             />
-                        </div>
+                        </motion.div>
                     </motion.div>
                 </div>
             </section>
 
             {/* --- MARQUEE SEPARATOR --- */}
-            <div className="relative py-12 bg-[#1a472a] text-[#c5a059] flex items-center overflow-hidden -rotate-1 shadow-2xl z-20">
+            <div className="relative py-12 bg-[#1a472a] text-[#c5a059] flex items-center overflow-hidden -rotate-1 shadow-2xl z-20 hover:bg-[#153a22] transition-colors transition-duration-500">
                 <ParallaxText baseVelocity={-5}>TRANSPARENCY • ACCOUNTABILITY • SPEED • JUSTICE • </ParallaxText>
             </div>
 
             {/* --- FEATURES SECTION --- */}
-            <section className="py-32 relative z-10">
+            <section className="py-24 md:py-32 relative z-10 bg-white/60 backdrop-blur-md">
                 <div className="container mx-auto px-6 md:px-12">
                     <div className="text-center mb-20">
                         <motion.span
@@ -220,61 +258,70 @@ const LandingPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { title: "Real-time Tracking", icon: <Clock className="w-10 h-10" />, desc: "Monitor your complaint status every step of the way with live updates.", bg: "bg-blue-50 text-blue-700" },
-                            { title: "Direct Action", icon: <Zap className="w-10 h-10" />, desc: "Complaints are routed directly to the responsible field officer.", bg: "bg-yellow-50 text-yellow-700" },
-                            { title: "Public Analytics", icon: <TrendingUp className="w-10 h-10" />, desc: "View heatmaps and statistics of grievances in your area.", bg: "bg-purple-50 text-purple-700" }
+                            { title: "Real-time Tracking", icon: <Clock className="w-8 h-8" />, desc: "Monitor your complaint status every step of the way with live updates.", bg: "bg-blue-50 text-blue-700" },
+                            { title: "Direct Action", icon: <Zap className="w-8 h-8" />, desc: "Complaints are routed directly to the responsible field officer.", bg: "bg-yellow-50 text-yellow-700" },
+                            { title: "Public Analytics", icon: <BarChart3 className="w-8 h-8" />, desc: "View heatmaps and statistics of grievances in your area.", bg: "bg-purple-50 text-purple-700" }
                         ].map((item, index) => (
-                            <TiltCard key={index} className="h-full">
+                            <SpotlightCard key={index} className="rounded-3xl h-full shadow-lg border-gray-100">
                                 <motion.div
-                                    initial={{ opacity: 0, y: 40 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: index * 0.2 }}
-                                    className="h-full bg-white p-10 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col items-start gap-6 hover:border-[#1a472a]/20 transition-colors"
+                                    className="p-10 h-full flex flex-col items-start gap-6 relative z-10 group"
+                                    whileHover={{ y: -5 }}
                                 >
-                                    <div className={`p-4 rounded-2xl ${item.bg}`}>
+                                    <div className={`p-4 rounded-2xl ${item.bg} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
                                         {item.icon}
                                     </div>
-                                    <h3 className="text-2xl font-bold text-gray-900">{item.title}</h3>
+                                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-[#1a472a] transition-colors">{item.title}</h3>
                                     <p className="text-gray-500 leading-relaxed text-lg">{item.desc}</p>
+
+                                    <div className="mt-auto pt-4 flex items-center gap-2 text-[#1a472a] font-semibold opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0">
+                                        Learn more <ArrowRight size={16} />
+                                    </div>
                                 </motion.div>
-                            </TiltCard>
+                            </SpotlightCard>
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* --- CATEGORIES PARALLAX SECTION --- */}
-            <section className="py-32 bg-[#1a472a] text-white relative overflow-hidden">
+            <section className="py-24 md:py-32 bg-[#1a472a]/95 text-white relative overflow-hidden backdrop-blur-sm">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+
                 <div className="container mx-auto px-6 md:px-12 relative z-10">
                     <div className="text-center mb-20">
                         <h2 className="text-5xl font-serif font-bold mb-6">Departments</h2>
                         <p className="text-green-200 text-xl max-w-2xl mx-auto">We cover every aspect of civic life. Select your concern area.</p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                         {[
-                            { name: "Sanitation", icon: Users },
-                            { name: "Roadworks", icon: Building },
-                            { name: "Lighting", icon: Zap },
-                            { name: "Water Supply", icon: CheckCircle },
-                            { name: "Transport", icon: Clock },
-                            { name: "Health", icon: AlertCircle },
-                            { name: "Law & Order", icon: Shield },
-                            { name: "Education", icon: Award }
+                            { name: "Sanitation", icon: Users, stats: "1.2k complaints" },
+                            { name: "Roadworks", icon: Building, stats: "850+ in progress" },
+                            { name: "Lighting", icon: Zap, stats: "98% resolved" },
+                            { name: "Water Supply", icon: CheckCircle, stats: "24h avg time" },
+                            { name: "Transport", icon: Clock, stats: "450 active" },
+                            { name: "Health", icon: AlertCircle, stats: "Priority High" },
+                            { name: "Law & Order", icon: Shield, stats: "Direct Line" },
+                            { name: "Education", icon: Award, stats: "New Dept" }
                         ].map((cat, i) => (
                             <motion.div
                                 key={i}
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
-                                whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                                whileHover={{ scale: 1.05, y: -5, backgroundColor: "rgba(255,255,255,0.15)" }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.05 }}
-                                className="bg-white/5 border border-white/10 p-8 rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer backdrop-blur-sm"
+                                className="group bg-white/5 border border-white/10 p-8 rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:shadow-green-900/50"
                             >
-                                <cat.icon className="w-8 h-8 text-[#c5a059]" />
-                                <span className="font-semibold tracking-wide text-lg">{cat.name}</span>
+                                <div className="p-3 bg-white/10 rounded-full group-hover:bg-[#c5a059] transition-colors duration-300">
+                                    <cat.icon className="w-8 h-8 text-[#c5a059] group-hover:text-[#1a472a] transition-colors" />
+                                </div>
+                                <div className="text-center">
+                                    <span className="font-semibold tracking-wide text-lg block">{cat.name}</span>
+                                    <span className="text-xs text-green-300 uppercase tracking-wider font-medium opacity-0 group-hover:opacity-100 transition-opacity mt-1 block">
+                                        {cat.stats}
+                                    </span>
+                                </div>
                             </motion.div>
                         ))}
                     </div>
@@ -282,25 +329,33 @@ const LandingPage = () => {
             </section>
 
             {/* --- CALL TO ACTION --- */}
-            <section className="py-32 relative overflow-hidden">
+            <section className="py-24 md:py-32 relative overflow-hidden bg-transparent">
                 <div className="container mx-auto px-6 text-center">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        className="bg-[#c5a059] rounded-[3rem] p-16 md:p-24 relative overflow-hidden"
+                        className="bg-[#c5a059] rounded-[3rem] p-10 md:p-24 relative overflow-hidden group shadow-2xl"
                     >
                         <div className="absolute inset-0 bg-black/5 pattern-dots opacity-20"></div>
+                        {/* Hover gradient reveal */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+
                         <motion.div
-                            style={{ y: useTransform(scrollYProgress, [0.6, 1], [0, -100]) }}
+                            style={{ y: useTransform(scrollYProgress, [0.6, 1], [0, -50]) }}
                             className="relative z-10"
                         >
                             <h2 className="text-4xl md:text-7xl font-serif font-bold text-[#1a472a] mb-8">Ready to make a change?</h2>
                             <p className="text-[#1a472a] text-xl md:text-2xl max-w-2xl mx-auto mb-12 font-medium">Join thousands of citizens building a better tomorrow, one complaint at a time.</p>
-                            <Link to="/register">
-                                <button className="bg-[#1a472a] text-white px-10 py-5 rounded-full text-xl font-bold hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                            <Link to={actionLink}>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="bg-[#1a472a] text-white px-10 py-5 rounded-full text-xl font-bold shadow-2xl hover:shadow-green-900/30 transition-all duration-300 flex items-center gap-3 mx-auto"
+                                >
                                     Get Started Now
-                                </button>
+                                    <ArrowRight />
+                                </motion.button>
                             </Link>
                         </motion.div>
                     </motion.div>

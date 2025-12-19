@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Shield, AlertCircle, CheckSquare, Clock } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -12,11 +13,11 @@ const AdminDashboard = () => {
   ];
 
   if (!user || user.role !== 'ADMIN') {
-      return <div className="p-10 text-center text-red-600">Access Denied. Admins only.</div>;
+    return <Navigate to="/login" replace />;
   }
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-gray-50 min-h-screen pt-24">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-3xl font-serif font-bold text-gray-900">Authority Dashboard</h2>
@@ -31,10 +32,10 @@ const AdminDashboard = () => {
 
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <MetricBox title="Total Complaints" value="152" icon={<Shield className="text-gray-400"/>} />
-        <MetricBox title="Escalated" value="12" valueColor="text-red-600" icon={<AlertCircle className="text-red-400"/>} />
-        <MetricBox title="Unread" value="45" valueColor="text-yellow-600" icon={<Clock className="text-yellow-400"/>} />
-        <MetricBox title="Resolved" value="95" valueColor="text-green-600" icon={<CheckSquare className="text-green-400"/>} />
+        <MetricBox title="Total Complaints" value="152" icon={<Shield className="text-gray-400" />} />
+        <MetricBox title="Escalated" value="12" valueColor="text-red-600" icon={<AlertCircle className="text-red-400" />} />
+        <MetricBox title="Unread" value="45" valueColor="text-yellow-600" icon={<Clock className="text-yellow-400" />} />
+        <MetricBox title="Resolved" value="95" valueColor="text-green-600" icon={<CheckSquare className="text-green-400" />} />
       </div>
 
       {/* Management Table */}
@@ -66,10 +67,9 @@ const AdminDashboard = () => {
                     )}
                   </td>
                   <td className="p-4">
-                    <span className={`px-2 py-1 rounded text-xs font-bold ${
-                      c.status === 'Resolved' ? 'bg-green-100 text-green-800' : 
-                      c.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
-                    }`}>
+                    <span className={`px-2 py-1 rounded text-xs font-bold ${c.status === 'Resolved' ? 'bg-green-100 text-green-800' :
+                        c.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
+                      }`}>
                       {c.status}
                     </span>
                   </td>
