@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, AnimatePresence } from 'framer-motion';
-import { AlertCircle, CheckCircle, Clock, ArrowRight, TrendingUp, Users, Building, Shield, Zap, Award, BarChart3, FileText, MousePointer2 } from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, ArrowRight, TrendingUp, Users, Building, Shield, Zap, Award, BarChart3, FileText, MousePointer2, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroIllustration from '../assets/hero_illustration.png';
 import ImmersiveBackground from '../components/ImmersiveBackground';

@@ -22,7 +22,7 @@ const Dashboard = () => {
             try {
                 const userId = user?.userId || user?.id; // backend might send userId or id
                 if (userId) {
-                    const res = await axios.get(`http://localhost:8080/api/grievances/user/${userId}`);
+                    const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/grievances/user/${userId}`);
                     setComplaints(res.data);
                 }
             } catch (error) {

@@ -18,7 +18,7 @@ const AdminDashboard = () => {
 
   const fetchGrievances = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/grievances');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/grievances`);
       setGrievances(response.data);
       setLoading(false);
     } catch (error) {
@@ -32,7 +32,7 @@ const AdminDashboard = () => {
       const payload = { status: newStatus };
       if (reason) payload.rejectionReason = reason;
 
-      await axios.put(`http://localhost:8080/api/grievances/update/${id}`, payload);
+      await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/grievances/update/${id}`, payload);
 
       // Optimistic update
       setGrievances(prev => prev.map(g =>

@@ -51,16 +51,16 @@ const Footer = () => {
                             <a href="https://github.com/Sachin23991" target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-[#c5a059] hover:text-[#1a472a] transition-all">
                                 <Github size={20} />
                             </a>
-                            <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-[#c5a059] hover:text-[#1a472a] transition-all">
+                            <a href="https://x.com/MandhiyaRao" target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-[#c5a059] hover:text-[#1a472a] transition-all">
                                 <Twitter size={20} />
                             </a>
-                            <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-[#c5a059] hover:text-[#1a472a] transition-all">
+                            <a href="https://www.linkedin.com/in/sachin6/" target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-[#c5a059] hover:text-[#1a472a] transition-all">
                                 <Linkedin size={20} />
                             </a>
                         </div>
                         <div className="flex items-center gap-2 text-green-100/70 text-sm">
                             <Mail size={16} />
-                            <span>support@civilgrievance.gov</span>
+                            <a href="mailto:sachinraosahab7@gmail.com" className="hover:text-white transition-colors">sachinraosahab7@gmail.com</a>
                         </div>
                     </div>
                 </div>

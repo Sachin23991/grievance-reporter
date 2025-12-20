@@ -82,7 +82,7 @@ const Login = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', formData);
+            const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/auth/login`, formData);
             if (response.data) {
                 login(response.data);
                 if (response.data.role === 'ADMIN') {

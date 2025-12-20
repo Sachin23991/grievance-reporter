@@ -10,9 +10,14 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import GrievanceForm from './pages/GrievanceForm';
 import HowItWorks from './pages/HowItWorks';
-
 import DepartmentDetails from './pages/DepartmentDetails';
-import Footer from './components/Footer';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
+import Accessibility from './pages/Accessibility';
+import FooterWrapper from './components/FooterWrapper';
 import { ToastProvider } from './context/ToastContext';
 
 function App() {
@@ -33,9 +38,17 @@ function App() {
                 <Route path="/raise-grievance" element={<GrievanceForm />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/department/:id" element={<DepartmentDetails />} />
+
+                {/* Footer Pages */}
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route path="/accessibility" element={<Accessibility />} />
               </Routes>
             </div>
-            <Footer />
+            <FooterWrapper />
           </div>
         </Router>
       </ToastProvider>

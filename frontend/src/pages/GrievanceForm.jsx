@@ -68,9 +68,9 @@ const GrievanceForm = () => {
             const cat = CATEGORIES.find(c => c.label === existingComplaint.category) || CATEGORIES[0];
             setFormData({
                 category: cat,
-                subject: existingComplaint.title || existingComplaint.category, 
+                subject: existingComplaint.title || existingComplaint.category,
                 description: existingComplaint.description || '',
-                location: existingComplaint.location || 'Location from previous record', 
+                location: existingComplaint.location || 'Location from previous record',
                 attachments: []
             });
             setStep(3); // Jump to details for editing
@@ -134,9 +134,9 @@ const GrievanceForm = () => {
 
             let response;
             if (isEditMode) {
-                response = await axios.put(`http://localhost:8080/api/grievances/update/${existingComplaint.id}`, payload);
+                response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/grievances/update/${existingComplaint.id}`, payload);
             } else {
-                response = await axios.post('http://localhost:8080/api/grievances/add', payload);
+                response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/grievances/add`, payload);
             }
 
             setComplaintId(response.data.id || '#GRV-NEW');
