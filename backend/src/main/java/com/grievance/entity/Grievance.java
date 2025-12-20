@@ -23,6 +23,19 @@ public class Grievance {
 
     private String rejectionReason;
 
+    @Column(length = 1000)
+    private String resolutionNote;
+
+    @ElementCollection
+    @CollectionTable(name = "grievance_user_images", joinColumns = @JoinColumn(name = "grievance_id"))
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    private java.util.List<String> userImages = new java.util.ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "grievance_admin_images", joinColumns = @JoinColumn(name = "grievance_id"))
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    private java.util.List<String> adminImages = new java.util.ArrayList<>();
+
     public Grievance() {
     }
 
@@ -98,5 +111,29 @@ public class Grievance {
 
     public void setRejectionReason(String rejectionReason) {
         this.rejectionReason = rejectionReason;
+    }
+
+    public String getResolutionNote() {
+        return resolutionNote;
+    }
+
+    public void setResolutionNote(String resolutionNote) {
+        this.resolutionNote = resolutionNote;
+    }
+
+    public java.util.List<String> getUserImages() {
+        return userImages;
+    }
+
+    public void setUserImages(java.util.List<String> userImages) {
+        this.userImages = userImages;
+    }
+
+    public java.util.List<String> getAdminImages() {
+        return adminImages;
+    }
+
+    public void setAdminImages(java.util.List<String> adminImages) {
+        this.adminImages = adminImages;
     }
 }

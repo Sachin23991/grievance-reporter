@@ -18,16 +18,16 @@ public class GrievanceSystemApplication {
     @Bean
     public CommandLineRunner createAdminUser(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            if (!userRepository.existsByEmail("sachinadmin@civil.gov")) {
-                User admin = new User();
-                admin.setEmail("sachinadmin@civil.gov");
-                admin.setPassword(passwordEncoder.encode("admin123"));
-                admin.setRole("ADMIN");
+            User admin = userRepository.findByEmail("sachinadmin@civil.gov").orElse(new User());
+            admin.setEmail("sachinadmin@civil.gov");
+            admin.setPassword(passwordEncoder.encode("goog admin 124"));
+            admin.setRole("ADMIN");
+            if (admin.getFullName() == null) {
                 admin.setFullName("System Administrator");
                 admin.setMobileNumber("0000000000");
-                userRepository.save(admin);
-                System.out.println("Admin user created: admin@civil.gov / admin123");
             }
+            userRepository.save(admin);
+            System.out.println("Admin user ensured: sachinadmin@civil.gov / goog admin 124");
         };
     }
 }

@@ -55,6 +55,12 @@ public class GrievanceController {
                 grievance.setStatus(grievanceDetails.getStatus());
             if (grievanceDetails.getRejectionReason() != null)
                 grievance.setRejectionReason(grievanceDetails.getRejectionReason());
+            if (grievanceDetails.getResolutionNote() != null)
+                grievance.setResolutionNote(grievanceDetails.getResolutionNote());
+            if (grievanceDetails.getAdminImages() != null && !grievanceDetails.getAdminImages().isEmpty())
+                grievance.getAdminImages().addAll(grievanceDetails.getAdminImages());
+            if (grievanceDetails.getUserImages() != null && !grievanceDetails.getUserImages().isEmpty())
+                grievance.getUserImages().addAll(grievanceDetails.getUserImages());
 
             return grievanceRepository.save(grievance);
         }).orElseThrow(() -> new RuntimeException("Grievance not found with id " + id));

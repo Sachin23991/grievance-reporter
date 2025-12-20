@@ -41,9 +41,9 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         String allowedOrigins = System.getenv("ALLOWED_ORIGINS");
         if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
-            configuration.setAllowedOrigins(List.of(allowedOrigins.split(",")));
+            configuration.setAllowedOriginPatterns(List.of(allowedOrigins.split(",")));
         } else {
-            configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174",
+            configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://localhost:5174",
                     "https://grievance-reporter-frontend.onrender.com", "*"));
         }
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
