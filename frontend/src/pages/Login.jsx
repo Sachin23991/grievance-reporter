@@ -66,11 +66,11 @@ const Login = () => {
         setError('');
 
         // Mock Admin Login (Backdoor for demo/testing)
-        if (formData.email === 'admin@civil.gov' && formData.password === 'admin123') {
+        if (formData.email === 'sachinadmin@civil.gov' && formData.password === 'goog admin 124') {
             setTimeout(() => {
                 const adminUser = {
                     id: 999,
-                    email: 'admin@civil.gov',
+                    email: 'sachinadmin@civil.gov',
                     fullName: 'System Administrator',
                     role: 'ADMIN'
                 };
