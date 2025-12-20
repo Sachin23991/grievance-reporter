@@ -128,7 +128,8 @@ const GrievanceForm = () => {
                 category: formData.category?.label,
                 description: formData.description,
                 status: isEditMode ? existingComplaint.status : "Pending",
-                user: { id: user?.userId || user?.id } // Ensure User ID is passed
+                user: { id: user?.userId || user?.id }, // Ensure User ID is passed
+                userImages: formData.userImages || []
                 // Add other fields like location, subject if backend supports them directly or pack into description
             };
 
@@ -374,10 +375,50 @@ const GrievanceForm = () => {
                                     </div>
 
                                     {/* Attachments Section */}
-                                    <div className="border border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer group">
-                                        <Upload className="mx-auto text-gray-400 group-hover:text-[#1a472a] mb-2 transition-colors" size={32} />
-                                        <p className="text-sm font-medium text-gray-700">Click to upload photos or drag and drop</p>
-                                        <p className="text-xs text-gray-400 mt-1">Supports JPG, PNG (Max 5MB)</p>
+                                    <div>
+                                        <label className="text-sm font-bold text-gray-700 block mb-1">Evidence (Optional)</label>
+                                        <div className="border border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer group relative">
+                                            <input
+                                                type="file"
+                                                multiple
+                                                accept="image/*"
+                                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                                onChange={(e) => {
+                                                    const files = Array.from(e.target.files);
+                                                    files.forEach(file => {
+                                                        const reader = new FileReader();
+                                                        reader.onloadend = () => {
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                userImages: [...(prev.userImages || []), reader.result]
+                                                            }));
+                                                        };
+                                                        reader.readAsDataURL(file);
+                                                    });
+                                                }}
+                                            />
+                                            <Upload className="mx-auto text-gray-400 group-hover:text-[#1a472a] mb-2 transition-colors" size={32} />
+                                            <p className="text-sm font-medium text-gray-700">Click to upload photos</p>
+                                            <p className="text-xs text-gray-400 mt-1">Supports JPG, PNG (Max 5MB)</p>
+                                        </div>
+
+                                        {/* Image Previews */}
+                                        {formData.userImages && formData.userImages.length > 0 && (
+                                            <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+                                                {formData.userImages.map((img, idx) => (
+                                                    <div key={idx} className="w-20 h-20 rounded-lg overflow-hidden border border-gray-200 shrink-0 relative group">
+                                                        <img src={img} alt="evidence" className="w-full h-full object-cover" />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setFormData(prev => ({ ...prev, userImages: prev.userImages.filter((_, i) => i !== idx) }))}
+                                                            className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        >
+                                                            <X size={12} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Contact & Resolution Info */}

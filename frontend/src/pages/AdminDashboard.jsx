@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Shield, AlertCircle, CheckSquare, Clock, X, Check, Eye, Filter } from 'lucide-react';
+import { Shield, AlertCircle, CheckSquare, Clock, X, Check, Eye, Filter, Image as ImageIcon, Upload } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -9,8 +9,14 @@ const AdminDashboard = () => {
   const [grievances, setGrievances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedGrievance, setSelectedGrievance] = useState(null);
+
+  // Modals
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
+
+  const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
+  const [resolutionData, setResolutionData] = useState({ note: '', images: [] });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchGrievances();
@@ -27,32 +33,67 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleUpdateStatus = async (id, newStatus, reason = null) => {
+  const handleUpdateStatus = async (id, newStatus, extraData = null) => {
     try {
       const payload = { status: newStatus };
-      if (reason) payload.rejectionReason = reason;
+
+      // Handle Rejection
+      if (newStatus === 'Rejected' && extraData) {
+        payload.rejectionReason = extraData;
+      }
+
+      // Handle Resolution
+      if (newStatus === 'Resolved' && extraData) {
+        payload.resolutionNote = extraData.note;
+        payload.adminImages = extraData.images;
+      }
 
       await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/grievances/update/${id}`, payload);
 
       // Optimistic update
       setGrievances(prev => prev.map(g =>
-        g.id === id ? { ...g, status: newStatus, rejectionReason: reason } : g
+        g.id === id ? { ...g, status: newStatus, ...payload } : g
       ));
 
-      if (isRejectModalOpen) {
-        setIsRejectModalOpen(false);
-        setRejectionReason('');
-        setSelectedGrievance(null);
-      }
+      closeModals();
     } catch (error) {
       console.error("Failed to update status", error);
       alert("Failed to update status");
     }
   };
 
+  const closeModals = () => {
+    setIsRejectModalOpen(false);
+    setIsResolveModalOpen(false);
+    setRejectionReason('');
+    setResolutionData({ note: '', images: [] });
+    setSelectedGrievance(null);
+  };
+
   const openRejectModal = (grievance) => {
     setSelectedGrievance(grievance);
     setIsRejectModalOpen(true);
+  };
+
+  const openResolveModal = (grievance) => {
+    setSelectedGrievance(grievance);
+    setIsResolveModalOpen(true);
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setResolutionData(prev => ({
+        ...prev,
+        images: [...prev.images, reader.result]
+      }));
+      setUploading(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   if (!user || user.role !== 'ADMIN') {
@@ -100,15 +141,16 @@ const AdminDashboard = () => {
                   <th className="p-4 border-b border-green-100">Citizen</th>
                   <th className="p-4 border-b border-green-100">Category</th>
                   <th className="p-4 border-b border-green-100">Description</th>
+                  <th className="p-4 border-b border-green-100">Evidence</th>
                   <th className="p-4 border-b border-green-100">Status</th>
                   <th className="p-4 border-b border-green-100 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {loading ? (
-                  <tr><td colSpan="7" className="p-8 text-center text-gray-500">Loading grievances...</td></tr>
+                  <tr><td colSpan="8" className="p-8 text-center text-gray-500">Loading grievances...</td></tr>
                 ) : grievances.length === 0 ? (
-                  <tr><td colSpan="7" className="p-8 text-center text-gray-500">No grievances found.</td></tr>
+                  <tr><td colSpan="8" className="p-8 text-center text-gray-500">No grievances found.</td></tr>
                 ) : (
                   grievances.map((g) => (
                     <tr key={g.id} className="hover:bg-gray-50 transition-colors">
@@ -120,6 +162,13 @@ const AdminDashboard = () => {
                       </td>
                       <td className="p-4 text-gray-600 max-w-xs truncate" title={g.description}>
                         {g.description}
+                      </td>
+                      <td className="p-4 text-center">
+                        {g.userImages && g.userImages.length > 0 ? (
+                          <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded flex items-center justify-center gap-1 w-fit mx-auto">
+                            <ImageIcon size={12} /> {g.userImages.length}
+                          </span>
+                        ) : <span className="text-gray-300">-</span>}
                       </td>
                       <td className="p-4">
                         <StatusBadge status={g.status} />
@@ -146,9 +195,9 @@ const AdminDashboard = () => {
                           )}
                           {g.status === 'In Progress' && (
                             <button
-                              onClick={() => handleUpdateStatus(g.id, 'Resolved')}
+                              onClick={() => openResolveModal(g)}
                               className="p-1 text-blue-600 hover:bg-blue-50 rounded border border-blue-200"
-                              title="Mark Resolved"
+                              title="Resolve with Proof"
                             >
                               <CheckSquare size={16} />
                             </button>
@@ -180,7 +229,7 @@ const AdminDashboard = () => {
 
             <div className="flex justify-end gap-3 mt-6">
               <button
-                onClick={() => setIsRejectModalOpen(false)}
+                onClick={closeModals}
                 className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium"
               >
                 Cancel
@@ -196,6 +245,82 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Resolution Modal */}
+      {isResolveModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                <CheckSquare size={20} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Resolve Issue #{selectedGrievance?.id}</h3>
+                <p className="text-xs text-gray-500">Provide resolution details for the citizen.</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-bold text-gray-700 mb-1 block">Resolution Note</label>
+                <textarea
+                  className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none min-h-[100px]"
+                  placeholder="Describe how the issue was resolved (e.g., 'Pothole filled and leveled')..."
+                  value={resolutionData.note}
+                  onChange={(e) => setResolutionData(prev => ({ ...prev, note: e.target.value }))}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-bold text-gray-700 mb-1 block">Upload Proof (Optional)</label>
+                <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  <Upload className="w-6 h-6 text-gray-400 mx-auto mb-1" />
+                  <span className="text-xs text-gray-500">Click to upload image</span>
+                </div>
+              </div>
+
+              {resolutionData.images.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {resolutionData.images.map((img, idx) => (
+                    <div key={idx} className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 shrink-0 relative group">
+                      <img src={img} alt="proof" className="w-full h-full object-cover" />
+                      <button
+                        onClick={() => setResolutionData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))}
+                        className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={10} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={closeModals}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleUpdateStatus(selectedGrievance.id, 'Resolved', resolutionData)}
+                disabled={!resolutionData.note.trim() || uploading}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {uploading ? 'Uploading...' : 'Confirm Resolution'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

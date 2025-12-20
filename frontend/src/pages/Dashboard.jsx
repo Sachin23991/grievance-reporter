@@ -12,6 +12,8 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [greeting, setGreeting] = useState('Welcome back');
 
+    const [selectedGrievance, setSelectedGrievance] = useState(null);
+
     useEffect(() => {
         const hour = new Date().getHours();
         if (hour < 12) setGreeting('Good Morning');
@@ -159,6 +161,7 @@ const Dashboard = () => {
                                 animate={{ opacity: 1, x: 0 }}
                                 whileHover={{ scale: 1.01 }}
                                 className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between group transition-all hover:shadow-md cursor-pointer"
+                                onClick={() => setSelectedGrievance(complaint)}
                             >
                                 <div className="flex-1 w-full">
                                     <div className="flex items-center gap-4 mb-2">
@@ -189,7 +192,7 @@ const Dashboard = () => {
                                             <Edit2 size={14} /> Edit
                                         </button>
                                     )}
-                                    <button className="text-sm font-semibold text-green-700 hover:text-green-900 hover:underline">View Details</button>
+                                    <button onClick={(e) => { e.stopPropagation(); setSelectedGrievance(complaint); }} className="text-sm font-semibold text-green-700 hover:text-green-900 hover:underline">View Details</button>
                                 </div>
                             </motion.div>
                         ))
