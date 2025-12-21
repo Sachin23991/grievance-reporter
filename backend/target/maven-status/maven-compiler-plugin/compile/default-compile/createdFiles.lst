@@ -1,11 +1,12 @@
-com\grievance\controller\TestController.class
 com\grievance\entity\User.class
+com\grievance\service\EmailService.class
+com\grievance\entity\Grievance.class
+com\grievance\service\UserService.class
+com\grievance\App.class
+com\grievance\controller\TestController.class
 com\grievance\config\SecurityConfig.class
 com\grievance\controller\GrievanceController.class
-com\grievance\entity\Grievance.class
 com\grievance\repository\GrievanceRepository.class
 com\grievance\repository\UserRepository.class
 com\grievance\GrievanceSystemApplication.class
 com\grievance\controller\AuthController.class
-com\grievance\service\UserService.class
-com\grievance\App.class

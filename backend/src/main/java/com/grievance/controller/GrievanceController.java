@@ -4,6 +4,7 @@ import com.grievance.entity.Grievance;
 import com.grievance.entity.User;
 import com.grievance.repository.GrievanceRepository;
 import com.grievance.repository.UserRepository;
+import com.grievance.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,9 @@ public class GrievanceController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping
     public List<Grievance> getAllGrievances() {
@@ -51,8 +55,20 @@ public class GrievanceController {
                 grievance.setCategory(grievanceDetails.getCategory());
             if (grievanceDetails.getDescription() != null)
                 grievance.setDescription(grievanceDetails.getDescription());
-            if (grievanceDetails.getStatus() != null)
+            if (grievanceDetails.getStatus() != null) {
+                // Send email if resolving
+                if ("Resolved".equals(grievanceDetails.getStatus()) && !"Resolved".equals(grievance.getStatus())) {
+                    if (grievance.getUser() != null && grievance.getUser().getEmail() != null) {
+                        try {
+                            emailService.sendResolutionEmail(grievance.getUser().getEmail(), grievance.getId(),
+                                    grievanceDetails.getResolutionNote());
+                        } catch (Exception e) {
+                            System.err.println("Failed to send email: " + e.getMessage());
+                        }
+                    }
+                }
                 grievance.setStatus(grievanceDetails.getStatus());
+            }
             if (grievanceDetails.getRejectionReason() != null)
                 grievance.setRejectionReason(grievanceDetails.getRejectionReason());
             if (grievanceDetails.getResolutionNote() != null)

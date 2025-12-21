@@ -198,6 +198,139 @@ const Dashboard = () => {
                         ))
                     )}
                 </div>
+
+                {/* Details Modal */}
+                {selectedGrievance && (
+                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setSelectedGrievance(null)}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                        >
+                            <div className="p-8">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <span className="font-mono font-bold text-gray-500 text-sm tracking-widest bg-gray-100 px-3 py-1 rounded-lg">#{selectedGrievance.id}</span>
+                                            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border ${statusColors(selectedGrievance.status)}`}>
+                                                <span className={`w-2 h-2 rounded-full ${statusDot(selectedGrievance.status)}`}></span>
+                                                {selectedGrievance.status || 'Pending'}
+                                            </div>
+                                        </div>
+                                        <h2 className="text-2xl font-serif font-bold text-gray-900">{selectedGrievance.category || selectedGrievance.title}</h2>
+                                        <p className="text-gray-500 text-sm flex items-center gap-2 mt-1">
+                                            <Activity size={14} /> Raised on {new Date(selectedGrievance.dateRaised || Date.now()).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setSelectedGrievance(null)}
+                                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                    >
+                                        <XCircle size={24} className="text-gray-400" />
+                                    </button>
+                                </div>
+
+                                <div className="space-y-6">
+                                    {/* Description */}
+                                    <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                        <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 flex items-center gap-2">
+                                            <FileText size={16} className="text-gray-400" />
+                                            Description
+                                        </h4>
+                                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                            {selectedGrievance.description}
+                                        </p>
+                                    </div>
+
+                                    {/* Location (if available) */}
+                                    {selectedGrievance.location && (
+                                        <div className="flex items-start gap-4 p-4 bg-blue-50 text-blue-900 rounded-xl">
+                                            <div className="mt-0.5">
+                                                <Info size={18} className="text-blue-500" />
+                                            </div>
+                                            <div>
+                                                <span className="font-bold block text-sm">Location</span>
+                                                <span className="text-sm opacity-90">{selectedGrievance.location}</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Admin Response Section (Resolved/Rejected) */}
+                                    {selectedGrievance.status === 'Resolved' && (
+                                        <div className="bg-green-50 border border-green-200 p-6 rounded-2xl">
+                                            <h4 className="text-sm font-bold text-green-800 uppercase tracking-wide mb-3 flex items-center gap-2">
+                                                <CheckCircle size={16} />
+                                                Official Resolution
+                                            </h4>
+                                            <p className="text-green-900 mb-4">{selectedGrievance.resolutionNote || 'This issue has been successfully resolved.'}</p>
+                                            {selectedGrievance.adminImages && selectedGrievance.adminImages.length > 0 && (
+                                                <div className="mt-4">
+                                                    <p className="text-xs font-bold text-green-700 mb-2 uppercase">Proof of Resolution</p>
+                                                    <div className="flex gap-2 overflow-x-auto pb-2">
+                                                        {selectedGrievance.adminImages.map((img, i) => (
+                                                            <img key={i} src={img} alt="Resolution Proof" className="w-24 h-24 object-cover rounded-lg border border-green-200 shadow-sm hover:scale-105 transition-transform cursor-pointer" />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {selectedGrievance.status === 'Rejected' && (
+                                        <div className="bg-red-50 border border-red-200 p-6 rounded-2xl">
+                                            <h4 className="text-sm font-bold text-red-800 uppercase tracking-wide mb-3 flex items-center gap-2">
+                                                <XCircle size={16} />
+                                                Rejection Reason
+                                            </h4>
+                                            <p className="text-red-900">{selectedGrievance.rejectionReason || 'This grievance was rejected by the authority.'}</p>
+                                        </div>
+                                    )}
+
+                                    {/* User Attachments */}
+                                    {selectedGrievance.userImages && selectedGrievance.userImages.length > 0 && (
+                                        <div>
+                                            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">Your Evidence</h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                {selectedGrievance.userImages.map((img, i) => (
+                                                    <img key={i} src={img} alt="Evidence" className="w-full h-32 object-cover rounded-xl border border-gray-200 shadow-sm hover:opacity-90 transition-opacity" />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Footer Actions */}
+                            <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-between items-center rounded-b-3xl">
+                                <span className="text-xs text-gray-400 font-medium">
+                                    Last filtered: {new Date().toLocaleTimeString()}
+                                </span>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => setSelectedGrievance(null)}
+                                        className="px-5 py-2.5 text-gray-600 font-bold bg-white border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors"
+                                    >
+                                        Close
+                                    </button>
+                                    {selectedGrievance.status === 'Pending' && (
+                                        <button
+                                            onClick={() => {
+                                                handleEdit(selectedGrievance);
+                                                setSelectedGrievance(null);
+                                            }}
+                                            className="px-6 py-2.5 bg-[#1a472a] text-white font-bold rounded-xl shadow-lg shadow-green-900/20 hover:bg-green-900 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                                        >
+                                            <Edit2 size={16} />
+                                            Edit Complaint
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
             </div>
         </div>
     );
