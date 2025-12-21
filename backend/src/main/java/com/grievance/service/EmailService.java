@@ -23,6 +23,12 @@ public class EmailService {
                 "Thank you,\n" +
                 "Civil Grievance Authority");
 
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+            System.out.println("✅ Email Sent Successfully to: " + toEmail);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send email to: " + toEmail);
+            e.printStackTrace();
+        }
     }
 }
