@@ -17,6 +17,7 @@ const AdminDashboard = () => {
   const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
   const [resolutionData, setResolutionData] = useState({ note: '', images: [] });
   const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchGrievances();
@@ -35,6 +36,7 @@ const AdminDashboard = () => {
 
   const handleUpdateStatus = async (id, newStatus, extraData = null) => {
     try {
+      setSubmitting(true);
       const payload = { status: newStatus };
 
       // Handle Rejection
@@ -59,6 +61,8 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Failed to update status", error);
       alert("Failed to update status");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -236,10 +240,10 @@ const AdminDashboard = () => {
               </button>
               <button
                 onClick={() => handleUpdateStatus(selectedGrievance.id, 'Rejected', rejectionReason)}
-                disabled={!rejectionReason.trim()}
+                disabled={!rejectionReason.trim() || submitting}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Confirm Rejection
+                {submitting ? 'Processing...' : 'Confirm Rejection'}
               </button>
             </div>
           </div>
@@ -311,10 +315,10 @@ const AdminDashboard = () => {
               </button>
               <button
                 onClick={() => handleUpdateStatus(selectedGrievance.id, 'Resolved', resolutionData)}
-                disabled={!resolutionData.note.trim() || uploading}
+                disabled={!resolutionData.note.trim() || uploading || submitting}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                {uploading ? 'Uploading...' : 'Confirm Resolution'}
+                {submitting ? 'Processing...' : uploading ? 'Uploading...' : 'Confirm Resolution'}
               </button>
             </div>
           </div>
