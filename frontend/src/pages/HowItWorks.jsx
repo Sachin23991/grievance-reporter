@@ -60,7 +60,7 @@ const HowItWorks = () => {
                         transition={{ delay: 0.4 }}
                         className="text-xl text-gray-600"
                     >
-                        A simple, transparent 4-step journey to get your voice heard and issues fixed.
+                        transparent 4-step journey to get your voice heard and issues fixed.
                     </motion.p>
                 </div>
 
